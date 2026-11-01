@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IS COMPANY | LED Mirror Wholesale Lahore</title>
+<meta name="description" content="IS COMPANY: LED wall mirrors, round and diamond mirrors at wholesale rates in Lahore. 4mm glass. Order on WhatsApp.">
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f4f0;color:#222;font-family:Arial,sans-serif}
+header{background:#111;color:white;padding:20px;border-bottom:3px solid #d8ad55}
+.brand{font-size:25px;font-weight:bold}
+.brand span{color:#d8ad55}
+.sub{font-size:12px;color:#ddd;margin-top:5px}
+.wrap{max-width:950px;margin:auto;padding:15px}
+.hero{background:linear-gradient(120deg,#171717,#55452e);color:white;padding:25px;border-radius:15px;margin:10px 0 20px}
+.hero h1{margin:0 0 10px}
+.tag{display:inline-block;background:#332817;color:#f2ce83;padding:9px 13px;border-radius:20px;margin-top:10px}
+h2{font-size:21px}
+input{width:100%;padding:13px;border:1px solid #ddd;border-radius:9px;margin:6px 0;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px}
+.card,.panel{background:white;padding:15px;border-radius:13px;border:1px solid #e5e5e5;margin-bottom:12px}
+.mirror{height:100px;background:linear-gradient(135deg,#333,#999);border-radius:10px;display:grid;place-items:center;color:#f5d58f;font-size:40px}
+.pic{width:100%;height:160px;object-fit:cover;border-radius:10px;display:block}
+.price{color:#a47420;font-weight:bold;font-size:18px}
+button{border:0;border-radius:9px;padding:12px;font-weight:bold;cursor:pointer}
+.dark{background:#171717;color:white;width:100%;margin-top:10px}
+.red{background:#b42318;color:white;width:100%;margin-top:10px}
+.green{background:#16834a;color:white;width:100%;margin-top:12px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cartline{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;gap:8px}
+.qty{display:flex;gap:8px;align-items:center}
+.qty button{background:#eee;padding:6px 12px}
+.hidden{display:none}
+.muted{font-size:12px;color:#777;line-height:1.5}
+.status{padding:12px;border-radius:9px;background:#edf2f7;margin:12px 0;font-size:14px}
+.error{background:#ffeded;color:#9b1c1c}
+footer{text-align:center;padding:25px;color:#777;font-size:12px}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand"><span>IS</span> COMPANY</div>
+  <div class="sub">LED Mirror & Construction Services · Lahore Wholesale</div>
+</header>
+
+<main class="wrap">
+
+<section class="hero">
+  <h1>Wholesale Mirror Collection</h1>
+  <p>Modern Designs · Premium Quality · Wholesale Rates</p>
+  <div class="tag">✓ 4mm Glass</div>
+  <div><button id="installBtn" class="hidden" style="margin-top:14px;background:#d8ad55;color:#111">Install App</button></div>
+</section>
+
+<div id="status" class="status">Connecting to Firebase...</div>
+
+<input id="search" placeholder="Search mirror or size...">
+
+<h2>Products & Wholesale Rates</h2>
+<div id="products" class="grid"></div>
+
+<section class="panel">
+  <h2>Your Order</h2>
+  <div id="cart">No products selected.</div>
+  <div class="row">
+    <b>Total</b>
+    <b id="total">Rs. 0</b>
+  </div>
+
+  <input id="customer" placeholder="Your name / Shop name">
+  <input id="city" placeholder="City / Delivery address">
+
+  <button class="green" id="orderBtn">Send Order on WhatsApp</button>
+  <p class="muted">Availability and delivery charges will be confirmed by IS COMPANY.</p>
+</section>
+
+<section class="panel">
+  <h2>Admin Login</h2>
+  <p class="muted">Login to update wholesale product prices.</p>
+
+  <div id="login">
+    <input id="email" type="email" placeholder="Admin Email">
+    <input id="password" type="password" placeholder="Password">
+    <button class="dark" id="loginBtn">Admin Login</button>
+  </div>
+
+  <div id="adminArea" class="hidden">
+    <div class="row">
+      <b>Manage Product Prices</b>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    <div id="priceEditor"></div>
+    <button class="green" id="saveBtn">Save All Prices</button>
+
+    <hr style="margin:20px 0;border:0;border-top:1px solid #ddd">
+
+    <b>Add New Product</b>
+    <input id="newCategory" placeholder="Product name (e.g. Led wall mirror round shape)">
+    <input id="newSize" placeholder="Size (e.g. 24*24)">
+    <input id="newPrice" type="number" min="0" placeholder="Price (e.g. 2700)">
+    <p class="muted">Photo (optional):</p>
+    <input id="newPhoto" type="file" accept="image/*">
+    <button class="green" id="addBtn">Add Product</button>
+  </div>
+
+  <p id="adminMessage" class="muted"></p>
+</section>
+
+</main>
+
+<footer>
+IS COMPANY · LED Mirror & Construction Services<br>
+WhatsApp: +92 309 4778779<br>
+<a href="privacy.html" style="color:#777">Privacy Policy</a>
+</footer>
+
+<script type="module">
+
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+doc,
+getDocs,
+setDoc,
+updateDoc,
+deleteDoc,
+addDoc,
+serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword,
+signOut,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+/* FIREBASE SETTINGS */
+
+const firebaseConfig = {
+apiKey: "AIzaSyBmZxpUso2XsrFku3djAO7x1EKtIJHyk68",
+authDomain: "is-company-b0ada.firebaseapp.com",
+projectId: "is-company-b0ada",
+storageBucket: "is-company-b0ada.firebasestorage.app",
+messagingSenderId: "1015137092665",
+appId: "1:1015137092665:web:c5394a03f8e16e118b39e8",
+measurementId: "G-15WLN7CGQ8"
+};
+
+const ADMIN_EMAIL = "iscompany313@gmail.com";
+const WHATSAPP = "923094778779";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let products = [];
+let cart = {};
+
+const $ = id => document.getElementById(id);
+
+function money(n){
+return "Rs. " + Number(n).toLocaleString("en-PK");
+}
+
+function status(message,error=false){
+$("status").textContent=message;
+$("status").className=error?"status error":"status";
+}
+
+/* LOAD PRODUCTS FROM FIREBASE */
+
+async function loadProducts(){
+
+try{
+
+status("Loading products...");
+
+// FIX: collection name is "Products" (capital P)
+const snap = await getDocs(collection(db,"Products"));
+
+// Field names are cleaned (extra spaces removed, lowercase) so
+// "Category ", "category" and "Category" all work.
+const allDocs = snap.docs.map(d=>{
+const x={};
+let priceKey="Price";
+Object.entries(d.data()).forEach(([k,v])=>{
+const key=k.trim().toLowerCase();
+x[key]=v;
+if(key==="price") priceKey=k;
+});
+return {
+id:d.id,
+category:x.category,
+size:x.size,
+price:x.price,
+image:x.image||x.photo||"",
+priceKey:priceKey
+};
+});
+
+products = allDocs.filter(p=>
+p.category && p.size && p.price !== undefined && p.price !== "" && !isNaN(Number(p.price))
+);
+
+renderProducts();
+renderCart();
+if(!$("adminArea").classList.contains("hidden")){
+renderEditor();
+}
+
+if(products.length){
+status(products.length+" products loaded successfully.");
+}else{
+status("No complete products found. Documents in database: "+allDocs.length+". Check Category, Size and Price fields.",true);
+}
+
+}catch(error){
+
+console.error(error);
+
+status(
+"Firebase error: "+(error.code || error.message),
+true
+);
+
+}
+}
+
+/* DISPLAY PRODUCTS */
+
+function renderProducts(){
+
+const q=$("search").value.toLowerCase();
+
+const root=$("products");
+root.innerHTML="";
+
+const filtered=products.filter(p=>
+(p.category+" "+p.size).toLowerCase().includes(q)
+);
+
+if(!filtered.length){
+root.textContent="No products found.";
+return;
+}
+
+filtered.forEach(p=>{
+
+const card=document.createElement("div");
+card.className="card";
+
+let image;
+if(p.image){
+image=document.createElement("img");
+image.src=p.image;
+image.alt=p.category;
+image.className="pic";
+}else{
+image=document.createElement("div");
+image.className="mirror";
+image.textContent="◇";
+}
+
+const title=document.createElement("h3");
+title.textContent=p.category;
+
+const size=document.createElement("p");
+size.textContent="Size: "+p.size;
+
+const price=document.createElement("div");
+price.className="price";
+price.textContent=money(p.price);
+
+const btn=document.createElement("button");
+btn.className="dark";
+btn.textContent="Add to Order";
+
+btn.onclick=()=>{
+cart[p.id]=(cart[p.id]||0)+1;
+renderCart();
+};
+
+card.append(image,title,size,price,btn);
+root.append(card);
+
+});
+
+}
+
+/* CART */
+
+function renderCart(){
+
+const root=$("cart");
+root.innerHTML="";
+
+let total=0;
+
+const selected=products.filter(p=>cart[p.id]>0);
+
+if(!selected.length){
+root.textContent="No products selected.";
+}
+
+selected.forEach(p=>{
+
+const qty=cart[p.id];
+total+=Number(p.price)*qty;
+
+const line=document.createElement("div");
+line.className="cartline";
+
+const label=document.createElement("span");
+label.textContent=p.category+" "+p.size+" - "+money(p.price);
+
+const controls=document.createElement("div");
+controls.className="qty";
+
+const minus=document.createElement("button");
+minus.textContent="-";
+minus.onclick=()=>changeQty(p.id,-1);
+
+const count=document.createElement("span");
+count.textContent=qty;
+
+const plus=document.createElement("button");
+plus.textContent="+";
+plus.onclick=()=>changeQty(p.id,1);
+
+controls.append(minus,count,plus);
+line.append(label,controls);
+root.append(line);
+
+});
+
+$("total").textContent=money(total);
+
+}
+
+function changeQty(id,amount){
+
+cart[id]=(cart[id]||0)+amount;
+
+if(cart[id]<=0){
+delete cart[id];
+}
+
+renderCart();
+
+}
+
+/* WHATSAPP ORDER */
+
+async function sendOrder(){
+
+const selected=products.filter(p=>cart[p.id]>0);
+
+if(!selected.length){
+alert("Please add a product first.");
+return;
+}
+
+const name=$("customer").value.trim()||"Not provided";
+const city=$("city").value.trim()||"Not provided";
+
+const total=selected.reduce((s,p)=>
+s+Number(p.price)*cart[p.id],0
+);
+
+const lines=selected.map(p=>
+p.category+" ("+p.size+") x "+cart[p.id]+
+" = "+money(Number(p.price)*cart[p.id])
+);
+
+const order={
+customer:name,
+city:city,
+items:selected.map(p=>({
+productId:p.id,
+category:p.category,
+size:p.size,
+price:Number(p.price),
+quantity:cart[p.id]
+})),
+total:total,
+status:"new",
+createdAt:serverTimestamp()
+};
+
+try{
+await addDoc(collection(db,"orders"),order);
+}catch(error){
+console.error("Order save error:",error);
+alert("Database order save failed. WhatsApp order will still open.");
+}
+
+const message=
+"IS COMPANY WHOLESALE ORDER\n"+
+"Name: "+name+"\n"+
+"City: "+city+"\n\n"+
+lines.join("\n")+
+"\n\nTotal: "+money(total);
+
+window.open(
+"https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message),
+"_blank"
+);
+
+}
+
+/* ADMIN LOGIN */
+
+async function adminLogin(){
+
+$("adminMessage").textContent="";
+
+try{
+
+const email=$("email").value.trim();
+
+if(email.toLowerCase()!==ADMIN_EMAIL.toLowerCase()){
+throw new Error("Use the registered admin email.");
+}
+
+await signInWithEmailAndPassword(
+auth,
+email,
+$("password").value
+);
+
+}catch(error){
+
+console.error(error);
+
+$("adminMessage").textContent=
+"Login error: "+(error.code || error.message);
+
+}
+
+}
+
+/* ADMIN PRICE EDITOR */
+
+function renderEditor(){
+
+const root=$("priceEditor");
+root.innerHTML="";
+
+products.forEach(p=>{
+
+const row=document.createElement("div");
+row.className="card";
+
+const label=document.createElement("b");
+label.textContent=p.category+" - "+p.size;
+
+const input=document.createElement("input");
+input.type="number";
+input.min="0";
+input.value=p.price;
+input.dataset.id=p.id;
+
+const note=document.createElement("div");
+note.className="muted";
+note.textContent=p.image?"Photo added. Choose a new one to replace it.":"No photo yet. Choose one:";
+
+const photo=document.createElement("input");
+photo.type="file";
+photo.accept="image/*";
+photo.onchange=()=>pickPhoto(p.id,photo);
+
+const del=document.createElement("button");
+del.className="red";
+del.textContent="Delete this product";
+del.onclick=()=>deleteProduct(p);
+
+row.append(label,input,note,photo,del);
+root.append(row);
+
+});
+
+}
+
+/* PHOTO PICKER */
+
+let newImages={};
+
+function pickPhoto(id,fileInput){
+
+const file=fileInput.files[0];
+if(!file) return;
+
+const reader=new FileReader();
+
+reader.onload=()=>{
+
+const img=new Image();
+
+img.onload=()=>{
+
+const max=600;
+const scale=Math.min(1,max/Math.max(img.width,img.height));
+
+const c=document.createElement("canvas");
+c.width=Math.round(img.width*scale);
+c.height=Math.round(img.height*scale);
+c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+
+newImages[id]=c.toDataURL("image/jpeg",0.7);
+
+alert("Photo ready. Now press Save All Prices to save it.");
+
+};
+
+img.src=reader.result;
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+/* SAVE PRICES */
+
+async function savePrices(){
+
+try{
+
+const inputs=$("priceEditor").querySelectorAll("input[type=number]");
+
+for(const input of inputs){
+
+const p=products.find(x=>x.id===input.dataset.id);
+const price=Number(input.value);
+
+if(!p || !Number.isFinite(price) || price<0){
+throw new Error("Invalid price.");
+}
+
+// FIX: save to "Products" with capital field names
+const data={[p.priceKey]:price};
+if(newImages[p.id]) data.Image=newImages[p.id];
+
+await updateDoc(
+doc(db,"Products",p.id),
+data
+);
+
+}
+
+newImages={};
+await loadProducts();
+renderEditor();
+
+alert("Prices and photos updated successfully!");
+
+}catch(error){
+
+console.error(error);
+
+alert("Price update failed: "+(error.code || error.message));
+
+}
+
+}
+
+/* DELETE PRODUCT */
+
+async function deleteProduct(p){
+
+if(!confirm("Delete "+p.category+" ("+p.size+")? This cannot be undone.")){
+return;
+}
+
+try{
+
+await deleteDoc(doc(db,"Products",p.id));
+
+delete cart[p.id];
+
+await loadProducts();
+renderEditor();
+
+alert("Product deleted.");
+
+}catch(error){
+
+console.error(error);
+
+alert("Delete failed: "+(error.code || error.message));
+
+}
+
+}
+
+/* ADD NEW PRODUCT */
+
+function resizeImage(file){
+
+return new Promise((resolve,reject)=>{
+
+const reader=new FileReader();
+
+reader.onerror=()=>reject(new Error("Could not read photo."));
+
+reader.onload=()=>{
+
+const img=new Image();
+
+img.onerror=()=>reject(new Error("Invalid photo."));
+
+img.onload=()=>{
+
+const max=600;
+const scale=Math.min(1,max/Math.max(img.width,img.height));
+
+const c=document.createElement("canvas");
+c.width=Math.round(img.width*scale);
+c.height=Math.round(img.height*scale);
+c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+
+resolve(c.toDataURL("image/jpeg",0.7));
+
+};
+
+img.src=reader.result;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+}
+
+async function addProduct(){
+
+const category=$("newCategory").value.trim();
+const size=$("newSize").value.trim();
+const price=Number($("newPrice").value);
+
+if(!category || !size || !Number.isFinite(price) || price<=0){
+alert("Please fill product name, size and price.");
+return;
+}
+
+try{
+
+const data={Category:category,Size:size,Price:price};
+
+const file=$("newPhoto").files[0];
+if(file){
+data.Image=await resizeImage(file);
+}
+
+await addDoc(collection(db,"Products"),data);
+
+$("newCategory").value="";
+$("newSize").value="";
+$("newPrice").value="";
+$("newPhoto").value="";
+
+await loadProducts();
+renderEditor();
+
+alert("Product added successfully!");
+
+}catch(error){
+
+console.error(error);
+
+alert("Add product failed: "+(error.code || error.message));
+
+}
+
+}
+
+/* AUTH STATE */
+
+onAuthStateChanged(auth,user=>{
+
+const isAdmin=
+!!user &&
+(user.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase();
+
+$("login").classList.toggle("hidden",isAdmin);
+$("adminArea").classList.toggle("hidden",!isAdmin);
+
+if(isAdmin){
+renderEditor();
+}
+
+});
+
+/* BUTTONS */
+
+$("search").addEventListener("input",renderProducts);
+$("orderBtn").addEventListener("click",sendOrder);
+$("loginBtn").addEventListener("click",adminLogin);
+$("logoutBtn").addEventListener("click",()=>signOut(auth));
+$("saveBtn").addEventListener("click",savePrices);
+$("addBtn").addEventListener("click",addProduct);
+
+/* INSTALL AS APP */
+
+let installPrompt=null;
+
+window.addEventListener("beforeinstallprompt",e=>{
+e.preventDefault();
+installPrompt=e;
+$("installBtn").classList.remove("hidden");
+});
+
+$("installBtn").addEventListener("click",async()=>{
+if(!installPrompt) return;
+installPrompt.prompt();
+await installPrompt.userChoice;
+installPrompt=null;
+$("installBtn").classList.add("hidden");
+});
+
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+
+/* START */
+
+loadProducts();
+
+</script>
+</body>
+</html>
