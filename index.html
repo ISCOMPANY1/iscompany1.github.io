@@ -212,9 +212,7 @@ priceKey:priceKey
 };
 });
 
-products = allDocs.filter(p=>
-p.category && p.size && p.price !== undefined && p.price !== "" && !isNaN(Number(p.price))
-);
+products = allDocs.filter(p=> p.category && p.image);
 
 renderProducts();
 renderCart();
