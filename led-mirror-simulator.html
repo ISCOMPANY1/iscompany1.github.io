@@ -1,72 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Asal Mirror - Sensor Simulator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Versace LED Mirror</title>
 <style>
-body{font-family:Arial,sans-serif;background:#0a0a0a;color:#fff;text-align:center;margin:0;padding:12px}
-.controls{background:#1c1c1c;padding:14px;border-radius:15px;max-width:520px;margin:0 auto 12px}
-.pill{background:#333;color:#fff;border:2px solid #555;padding:9px 14px;border-radius:20px;cursor:pointer}
-.pill.active{background:#fff;color:#000;font-weight:bold}
-input[type=range]{width:100%;margin:10px 0}
-.sensorBtn{background:#fff;color:#000;border:none;padding:15px;width:100%;border-radius:12px;font-size:19px;font-weight:bold;cursor:pointer;margin-top:12px}
-#stage{max-width:520px;height:460px;margin:0 auto;background:#111;border-radius:18px;display:flex;justify-content:center;align-items:center}
-#mirrorWrap{position:relative;width:340px;height:340px;border-radius:50%;overflow:hidden;box-shadow:0 0 60px rgba(255,255,255,0.8);cursor:pointer}
-#mirrorWrap.off{box-shadow:none;filter:brightness(0.25)}
-#mirrorWrap img{width:100%;height:100%;object-fit:cover}
-#sensorDot{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);width:16px;height:16px;background:#00e5ff;border-radius:50%;box-shadow:0 0 14px #00e5ff;border:2px solid #fff}
-#mirrorWrap.off #sensorDot{background:#ff0000;box-shadow:0 0 10px #ff0000}
-#hand{font-size:55px;position:absolute;bottom:60px;left:50%;transform:translateX(-50%);display:none}
+body{background:#111;color:#fff;text-align:center;font-family:sans-serif;margin:0;padding:15px}
+#box img{width:95%;max-width:420px;border-radius:50%;border:4px solid #fff}
+button{padding:14px 20px;border:none;border-radius:12px;font-size:18px;margin:8px;width:90%;max-width:400px}
+input{width:90%;max-width:400px}
 </style>
 </head>
 <body>
-<h2>🪞 Asal Mirror - Sensor Simulator</h2>
+<h2>✨ Versace LED Mirror ✨</h2>
 <p>Versace Design Wala Mirror - Haath Hilao</p>
-<div id="stage">
-<div id="mirrorWrap" onclick="toggleSensor()">
-<img src="mirror.jpg">
-<div id="sensorDot"></div>
-<div id="hand">👋</div>
-</div>
-</div>
-<div class="controls">
-<div id="status">💡 Light: ON hai</div>
-<b>Light Tez / Halki:</b>
-<input type="range" id="brightness" min="20" max="100" value="90" oninput="updateLight()">
-<button class="sensorBtn" onclick="toggleSensor()">👋 Haath Hilao - Sensor ON / OFF</button>
-<a href="index.html" style="display:block;background:#00c853;color:#fff;padding:14px;border-radius:12px;margin-top:12px;text-decoration:none;font-weight:bold">✅ Yehi Mirror Order Karna Hai</a>
-</div>
+
+<img id="m" src="mirror.jpg" onerror="this.src='mirror.jpg?v=1'">
+
+<p id="t">💡 Light: ON hai</p>
+<p>Light Tez / Halki:</p>
+<input type="range" min="30" max="120" value="100" oninput="document.getElementById('m').style.filter='brightness('+(this.value/100)+')'">
+
+<br><button style="background:orange;color:#fff" onclick="toggle()">👋 Haath Hilao - Sensor ON / OFF</button><br>
+<button onclick="document.body.style.background=document.body.style.background=='black'?'#111':'black'">🌙 Din / Raat</button><br>
+<br><a href="index.html" style="color:#fff">← Wapas Website Par Jayein</a>
+
 <script>
-var isOn=true;
-function updateLight(){var b=document.getElementById('brightness').value; var w=document.getElementById('mirrorWrap'); if(!isOn){w.style.filter='brightness(0.25)';return} w.style.filter='none'; w.style.boxShadow='0 0 '+(b/1.2)+'px rgba(255,255,255,0.8)';}
-function toggleSensor(){
-var h=document.getElementById('hand'); h.style.display='block'; setTimeout(function(){h.style.display='none'},600);
-if(navigator.vibrate) navigator.vibrate(60);
-isOn=!isOn; var w=document.getElementById('mirrorWrap');
-if(isOn){w.classList.remove('off'); document.getElementById('status').innerText='💡 Light: ON hai'; updateLight();}
-else{w.classList.add('off'); document.getElementById('status').innerText='🌑 Light: OFF hai - Dobara Dabao';}
+let on=true;
+function toggle(){
+  on=!on;
+  let img=document.getElementById('m');
+  img.style.filter=on?'brightness(1)':'brightness(0.2)';
+  document.getElementById('t').innerText=on?'💡 Light: ON hai':'💡 Light: OFF hai';
 }
-updateLight();
+document.getElementById('m').onclick=toggle;
 </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html><head><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{background:#111;color:#fff;text-align:center;font-family:sans-serif;margin:0;padding:15px}
-img{width:95%;max-width:420px;border-radius:50%;transition:0.3s}
-button{padding:14px 20px;border:none;border-radius:12px;font-size:18px;margin:8px;width:90%;max-width:400px}
-.off img{filter:brightness(0.35) grayscale(0.5)}
-</style></head>
-<body id="b">
-<h2>✨ Versace LED Mirror ✨</h2>
-<div><img id="m" src="mirror.jpg"></div>
-<p id="t">💡 Light: ON hai</p>
-<button style="background:orange" onclick="toggle()">👋 Haath Hilao - Sensor ON / OFF</button><br>
-<button onclick="document.getElementById('b').style.background=document.getElementById('b').style.background=='black'?'#111':'black'">🌙 Din / Raat</button><br>
-<a href="index.html" style="color:#fff">← Wapas Website Par Jayein</a>
-<script>
-let on=true;
-function toggle(){on=!on;document.getElementById('m').style.filter=on?'none':'brightness(0.3)';document.getElementById('t').innerText=on?'💡 Light: ON hai':'💡 Light: OFF hai'}
-document.getElementById('m').onclick=toggle;
-</script></body></html>
