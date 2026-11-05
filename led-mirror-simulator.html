@@ -3,163 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flower Mirror Simulator</title>
+<title>Asal Mirror - Sensor Simulator</title>
 <style>
-body{font-family:Arial,sans-serif;background:#111;color:#fff;text-align:center;margin:0;padding:12px}
-h2{margin:5px 0 10px;font-size:22px}
-.controls{background:#222;padding:14px;border-radius:15px;max-width:520px;margin:0 auto 12px}
-.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
-.pill{background:#333;color:#fff;border:2px solid #555;padding:9px 14px;border-radius:20px;cursor:pointer;font-size:14px}
-.pill.active{background:#e91e63;border-color:#e91e63;font-weight:bold}
-select{width:100%;padding:10px;border-radius:8px;border:none;font-size:16px;margin-top:5px}
+body{font-family:Arial,sans-serif;background:#0a0a0a;color:#fff;text-align:center;margin:0;padding:12px}
+.controls{background:#1c1c1c;padding:14px;border-radius:15px;max-width:520px;margin:0 auto 12px}
+.pill{background:#333;color:#fff;border:2px solid #555;padding:9px 14px;border-radius:20px;cursor:pointer}
+.pill.active{background:#fff;color:#000;font-weight:bold}
 input[type=range]{width:100%;margin:10px 0}
-.sensorBtn{background:linear-gradient(45deg,#ff9800,#ff5722);color:#fff;border:none;padding:14px;width:100%;border-radius:12px;font-size:18px;font-weight:bold;cursor:pointer;margin-top:12px}
-.sensorBtn:active{transform:scale(0.97)}
-.dayNight{background:#fff;color:#000;margin-top:10px}
-.flowerBtn{background:linear-gradient(45deg,#e91e63,#ff80ab);margin-top:10px}
-#room{max-width:520px;height:400px;margin:0 auto;border-radius:18px;position:relative;overflow:hidden;display:flex;justify-content:center;align-items:center;background:#8d6e63}
-#mirror{width:240px;height:330px;background:linear-gradient(135deg,#fff5f8,#f8bbd0);position:relative;overflow:hidden;border:6px solid #ff80ab;transition:0.3s;border-radius:18px;box-shadow:0 0 60px #ff80ab;cursor:pointer}
-#mirrorText{position:absolute;top:44%;left:0;width:100%;color:#880e4f;font-size:15px;line-height:1.5;z-index:2;font-weight:bold}
-#designTop{position:absolute;top:2px;left:0;width:100%;text-align:center;font-size:20px;z-index:3;line-height:1.1}
-#designBottom{position:absolute;bottom:24px;left:0;width:100%;text-align:center;font-size:20px;z-index:3;line-height:1.1}
-#designLeft{position:absolute;left:2px;top:0;height:100%;display:flex;flex-direction:column;justify-content:center;font-size:20px;z-index:3;line-height:1.4}
-#designRight{position:absolute;right:2px;top:0;height:100%;display:flex;flex-direction:column;justify-content:center;font-size:20px;z-index:3;line-height:1.4}
-#shine{position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent);transform:skewX(-20deg);z-index:4;pointer-events:none;animation:shine 3s infinite}
-@keyframes shine{0%{left:-80%}50%{left:120%}100%{left:120%}}
-#sensorDot{position:absolute;bottom:8px;right:10px;width:16px;height:16px;background:#00ff00;border-radius:50%;box-shadow:0 0 10px #00ff00;z-index:6}
-#hand{font-size:50px;position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:none;z-index:10}
-.sparkle{position:absolute;font-size:24px;z-index:8;pointer-events:none;animation:pop 0.8s forwards}
-@keyframes pop{0%{transform:scale(0);opacity:1}100%{transform:scale(1.5) translateY(-30px);opacity:0}}
-.petal{position:absolute;top:-20px;font-size:20px;z-index:9;pointer-events:none;animation:fall linear forwards}
-@keyframes fall{to{transform:translateY(420px) rotate(360deg);opacity:0}}
-#status{margin-top:10px;font-weight:bold}
-#designName{color:#ff80ab;font-weight:bold;margin-top:8px}
+.sensorBtn{background:#fff;color:#000;border:none;padding:15px;width:100%;border-radius:12px;font-size:19px;font-weight:bold;cursor:pointer;margin-top:12px}
+#stage{max-width:520px;height:460px;margin:0 auto;background:#111;border-radius:18px;display:flex;justify-content:center;align-items:center}
+#mirrorWrap{position:relative;width:340px;height:340px;border-radius:50%;overflow:hidden;box-shadow:0 0 60px rgba(255,255,255,0.8);cursor:pointer}
+#mirrorWrap.off{box-shadow:none;filter:brightness(0.25)}
+#mirrorWrap img{width:100%;height:100%;object-fit:cover}
+#sensorDot{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);width:16px;height:16px;background:#00e5ff;border-radius:50%;box-shadow:0 0 14px #00e5ff;border:2px solid #fff}
+#mirrorWrap.off #sensorDot{background:#ff0000;box-shadow:0 0 10px #ff0000}
+#hand{font-size:55px;position:absolute;bottom:60px;left:50%;transform:translateX(-50%);display:none}
 </style>
 </head>
 <body>
-<h2>🌸 Flower Mirror Simulator 🌸</h2>
-<div class="controls">
-<b>1. Kamra / Room:</b>
-<div class="row">
-<button class="pill active" id="btn-bedroom" onclick="setRoom('bedroom')">🛏️ Bedroom</button>
-<button class="pill" id="btn-bathroom" onclick="setRoom('bathroom')">🛁 Bathroom</button>
-<button class="pill" id="btn-salon" onclick="setRoom('salon')">💇 Salon</button>
-<button class="pill" id="btn-living" onclick="setRoom('living')">🛋️ Living</button>
-</div>
-
-<b>2. Flower Design Chunain 🌸:</b>
-<div class="row">
-<button class="pill active" id="d-flower" onclick="setDesign('flower','d-flower')">🌸 Gulabi Phool</button>
-<button class="pill" id="d-rose" onclick="setDesign('rose','d-rose')">🌹 Laal Gulab</button>
-<button class="pill" id="d-mix" onclick="setDesign('mix','d-mix')">🌷🌸 Mix Phool</button>
-<button class="pill" id="d-none" onclick="setDesign('none','d-none')">Saada</button>
-</div>
-<div id="designName">Design: 🌸 Gulabi Phool - Dulhan Special</div>
-
-<b>3. Mirror Shape:</b>
-<select id="shape" onchange="changeShape()">
-<option value="rect">Rectangle</option>
-<option value="round">Round</option>
-<option value="oval">Oval</option>
-<option value="arch">Arch</option>
-</select>
-
-<b>4. LED Color:</b>
-<div class="row">
-<button class="pill active" id="led-pink" onclick="setLED('#ff80ab','led-pink')">Pink</button>
-<button class="pill" id="led-white" onclick="setLED('#ffffff','led-white')">White</button>
-<button class="pill" id="led-warm" onclick="setLED('#ffe082','led-warm')">Warm Yellow</button>
-<button class="pill" id="led-blue" onclick="setLED('#80d8ff','led-blue')">Cool Blue</button>
-</div>
-
-<b>5. Brightness:</b>
-<input type="range" id="brightness" min="0" max="100" value="85" oninput="updateLED()">
-
-<button class="sensorBtn" onclick="toggleSensor()">👋 Haath Hilao - Sensor ON / OFF</button>
-<button class="sensorBtn flowerBtn" onclick="flowerRain()">🌸 Phool Barsao - Dulhan Wala Scene</button>
-<button class="sensorBtn dayNight" onclick="toggleNight()">🌙 Din / Raat</button>
-<div id="status">🌸 Flower Mirror - Phool Barsao dabao, maza aayega!</div>
-</div>
-
-<div id="room">
-<div id="mirror" onclick="tapMirror(event)">
-<div id="designTop">🌸 🌷 🌸 🌷 🌸</div>
-<div id="designLeft">🌸<br>🌷<br>🌸<br>🌷<br>🌸</div>
-<div id="designRight">🌸<br>🌷<br>🌸<br>🌷<br>🌸</div>
-<div id="mirrorText">🌸 LED Mirror 🌸<br><small>Dulhan Special<br>Tap karo, Phool girenge!</small></div>
-<div id="designBottom">🌷 🌸 🌷 🌸 🌷</div>
-<div id="shine"></div>
+<h2>🪞 Asal Mirror - Sensor Simulator</h2>
+<p>Versace Design Wala Mirror - Haath Hilao</p>
+<div id="stage">
+<div id="mirrorWrap" onclick="toggleSensor()">
+<img src="mirror.jpg">
 <div id="sensorDot"></div>
 <div id="hand">👋</div>
 </div>
 </div>
-<p><a href="index.html" style="color:#fff">← Wapas Website Par Jayein</a></p>
-
+<div class="controls">
+<div id="status">💡 Light: ON hai</div>
+<b>Light Tez / Halki:</b>
+<input type="range" id="brightness" min="20" max="100" value="90" oninput="updateLight()">
+<button class="sensorBtn" onclick="toggleSensor()">👋 Haath Hilao - Sensor ON / OFF</button>
+<a href="index.html" style="display:block;background:#00c853;color:#fff;padding:14px;border-radius:12px;margin-top:12px;text-decoration:none;font-weight:bold">✅ Yehi Mirror Order Karna Hai</a>
+</div>
 <script>
-var ledColor='#ff80ab'; var isOn=true; var isNight=false;
-function clearRoom(){['btn-bedroom','btn-bathroom','btn-salon','btn-living'].forEach(function(id){document.getElementById(id).classList.remove('active')})}
-function setRoom(r){
-  var room=document.getElementById('room'); clearRoom();
-  if(r=='bedroom'){room.style.background='#8d6e63'; document.getElementById('btn-bedroom').classList.add('active')}
-  if(r=='bathroom'){room.style.background='#607d8b'; document.getElementById('btn-bathroom').classList.add('active')}
-  if(r=='salon'){room.style.background='#ad1457'; document.getElementById('btn-salon').classList.add('active')}
-  if(r=='living'){room.style.background='#2e7d32'; document.getElementById('btn-living').classList.add('active')}
-  if(isNight) room.style.filter='brightness(0.35)';
-}
-function clearDesign(){['d-flower','d-rose','d-mix','d-none'].forEach(function(id){document.getElementById(id).classList.remove('active')})}
-function setDesign(type,id){
-  clearDesign(); document.getElementById(id).classList.add('active');
-  var top=document.getElementById('designTop'); var bottom=document.getElementById('designBottom');
-  var left=document.getElementById('designLeft'); var right=document.getElementById('designRight');
-  var mirror=document.getElementById('mirror'); var name=document.getElementById('designName');
-  if(type=='flower'){top.innerText='🌸 🌷 🌸 🌷 🌸'; bottom.innerText='🌷 🌸 🌷 🌸 🌷'; left.innerHTML='🌸<br>🌷<br>🌸<br>🌷<br>🌸'; right.innerHTML='🌸<br>🌷<br>🌸<br>🌷<br>🌸'; mirror.style.borderColor='#ff80ab'; mirror.style.boxShadow='0 0 60px #ff80ab'; name.innerText='Design: 🌸 Gulabi Phool - Dulhan Special'}
-  if(type=='rose'){top.innerText='🌹 🌹 🌹 🌹 🌹'; bottom.innerText='🌹 🌹 🌹 🌹 🌹'; left.innerHTML='🌹<br>🌹<br>🌹<br>🌹<br>🌹'; right.innerHTML='🌹<br>🌹<br>🌹<br>🌹<br>🌹'; mirror.style.borderColor='#e53935'; mirror.style.boxShadow='0 0 60px #e53935'; name.innerText='Design: 🌹 Laal Gulab - Mohabbat Wala'}
-  if(type=='mix'){top.innerText='🌷 🌸 🌹 🌼 🌻'; bottom.innerText='🌻 🌼 🌹 🌸 🌷'; left.innerHTML='🌷<br>🌹<br>🌼<br>🌻<br>🌸'; right.innerHTML='🌸<br>🌻<br>🌼<br>🌹<br>🌷'; mirror.style.borderColor='#ff9800'; mirror.style.boxShadow='0 0 60px #ff9800'; name.innerText='Design: 🌷🌸 Mix Phool - Rang Biranga'}
-  if(type=='none'){top.innerText=''; bottom.innerText=''; left.innerHTML=''; right.innerHTML=''; mirror.style.borderColor='#fff'; name.innerText='Design: Saada Mirror'}
-  if(navigator.vibrate) navigator.vibrate(30);
-}
-function changeShape(){
-  var m=document.getElementById('mirror'); var s=document.getElementById('shape').value;
-  if(s=='rect'){m.style.borderRadius='18px'; m.style.width='240px'; m.style.height='330px'}
-  if(s=='round'){m.style.borderRadius='50%'; m.style.width='280px'; m.style.height='280px'}
-  if(s=='oval'){m.style.borderRadius='50%'; m.style.width='240px'; m.style.height='330px'}
-  if(s=='arch'){m.style.borderRadius='120px 120px 8px 8px'; m.style.width='240px'; m.style.height='330px'}
-}
-function setLED(c,id){ledColor=c; ['led-white','led-warm','led-blue','led-pink'].forEach(function(x){document.getElementById(x).classList.remove('active')}); document.getElementById(id).classList.add('active'); updateLED()}
-function updateLED(){var b=document.getElementById('brightness').value; var mirror=document.getElementById('mirror'); if(!isOn){mirror.style.boxShadow='none'; mirror.style.borderColor='#333'; return} mirror.style.boxShadow='0 0 '+b+'px '+ledColor}
+var isOn=true;
+function updateLight(){var b=document.getElementById('brightness').value; var w=document.getElementById('mirrorWrap'); if(!isOn){w.style.filter='brightness(0.25)';return} w.style.filter='none'; w.style.boxShadow='0 0 '+(b/1.2)+'px rgba(255,255,255,0.8)';}
 function toggleSensor(){
-  var hand=document.getElementById('hand'); hand.style.display='block'; setTimeout(function(){hand.style.display='none'},600);
-  try{var ctx=new (window.AudioContext||window.webkitAudioContext)(); var o=ctx.createOscillator(); var g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value=1200; g.gain.value=0.1; o.start(); o.stop(ctx.currentTime+0.08)}catch(e){}
-  if(navigator.vibrate) navigator.vibrate(50);
-  isOn=!isOn; var dot=document.getElementById('sensorDot');
-  if(isOn){dot.style.background='#00ff00'; dot.style.boxShadow='0 0 10px #00ff00'; document.getElementById('status').innerText='💡 Light: ON hai'}
-  else{dot.style.background='#ff0000'; dot.style.boxShadow='0 0 10px #ff0000'; document.getElementById('status').innerText='🌑 Light: OFF hai - Dobara Haath Hilao'}
-  updateLED();
+var h=document.getElementById('hand'); h.style.display='block'; setTimeout(function(){h.style.display='none'},600);
+if(navigator.vibrate) navigator.vibrate(60);
+isOn=!isOn; var w=document.getElementById('mirrorWrap');
+if(isOn){w.classList.remove('off'); document.getElementById('status').innerText='💡 Light: ON hai'; updateLight();}
+else{w.classList.add('off'); document.getElementById('status').innerText='🌑 Light: OFF hai - Dobara Dabao';}
 }
-function toggleNight(){isNight=!isNight; var room=document.getElementById('room'); room.style.filter=isNight?'brightness(0.35)':'brightness(1)'}
-function tapMirror(e){
-  var mirror=document.getElementById('mirror');
-  var s=document.createElement('div'); s.className='sparkle'; s.innerText='✨';
-  s.style.left=(e.offsetX-10)+'px'; s.style.top=(e.offsetY-10)+'px';
-  mirror.appendChild(s); setTimeout(function(){s.remove()},800);
-  if(navigator.vibrate) navigator.vibrate(20);
-}
-function flowerRain(){
-  var room=document.getElementById('room');
-  var flowers=['🌸','🌷','🌹','🌼','🌻','🌺'];
-  for(var i=0;i<15;i++){
-    setTimeout(function(){
-      var p=document.createElement('div'); p.className='petal';
-      p.innerText=flowers[Math.floor(Math.random()*flowers.length)];
-      p.style.left=Math.random()*90+'%';
-      p.style.animationDuration=(2+Math.random()*2)+'s';
-      room.appendChild(p); setTimeout(function(){p.remove()},4000);
-    }, i*150);
-  }
-  document.getElementById('status').innerText='🌸 Wah! Phoolon Ki Barsaat Ho Gayi!';
-  if(navigator.vibrate) navigator.vibrate([50,50,50]);
-}
-updateLED();
+updateLight();
 </script>
 </body>
-  </html>
+</html>
