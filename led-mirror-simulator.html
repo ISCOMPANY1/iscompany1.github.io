@@ -6,33 +6,22 @@
 <title>Sensor + Room Mirror Simulator</title>
 <style>
 body{font-family:Arial,sans-serif;background:#111;color:#fff;text-align:center;margin:0;padding:12px}
-h2{margin:5px 0 10px}
+h2{margin:5px 0 10px;font-size:22px}
 .controls{background:#222;padding:14px;border-radius:15px;max-width:520px;margin:0 auto 12px}
 .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
 .pill{background:#333;color:#fff;border:2px solid #555;padding:9px 14px;border-radius:20px;cursor:pointer;font-size:14px}
 .pill.active{background:#00c853;border-color:#00c853;font-weight:bold}
 select{width:100%;padding:10px;border-radius:8px;border:none;font-size:16px;margin-top:5px}
-input[type=range]{width:100%}
+input[type=range]{width:100%;margin:10px 0}
 .sensorBtn{background:linear-gradient(45deg,#ff9800,#ff5722);color:#fff;border:none;padding:14px;width:100%;border-radius:12px;font-size:18px;font-weight:bold;cursor:pointer;margin-top:12px}
 .sensorBtn:active{transform:scale(0.97)}
-#room{max-width:520px;height:480px;margin:0 auto;border-radius:18px;position:relative;overflow:hidden;transition:0.5s;background:#5d4037;display:flex;justify-content:center;align-items:center}
-#room.bedroom{background:linear-gradient(#8d6e63,#4e342e)}
-#room.bathroom{background:linear-gradient(#b0bec5,#607d8b)}
-#room.salon{background:linear-gradient(#f48fb1,#ad1457)}
-#room.living{background:linear-gradient(#a5d6a7,#2e7d32)}
-#room.night{filter:brightness(0.35)}
-#mirror{width:240px;height:330px;background:linear-gradient(135deg,#e0e0e0,#9e9e9e);position:relative;overflow:hidden;border:8px solid #333;transition:0.3s;border-radius:10px}
-#mirror.round{border-radius:50%;width:280px;height:280px}
-#mirror.oval{border-radius:50%;width:240px;height:330px}
-#mirror.arch{border-radius:120px 120px 8px 8px}
-#mirrorText{position:absolute;top:42%;left:0;width:100%;color:#666;font-size:16px;line-height:1.5}
-#ledGlow{position:absolute;inset:0;pointer-events:none;opacity:0.8}
-#sensorDot{position:absolute;bottom:12px;right:12px;width:18px;height:18px;background:#ff0000;border-radius:50%;box-shadow:0 0 10px #ff0000;z-index:5}
-#sensorDot.on{background:#00ff00;box-shadow:0 0 12px #00ff00}
-#hand{font-size:50px;position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);display:none;z-index:10;animation:wave 0.6s ease}
-@keyframes wave{0%{transform:translateX(-80%) translateY(20px)}50%{transform:translateX(-20%) translateY(-20px)}100%{transform:translateX(-50%) translateY(0)}}
+.dayNight{background:#fff;color:#000;margin-top:10px}
+#room{max-width:520px;height:360px;margin:0 auto;border-radius:18px;position:relative;overflow:hidden;display:flex;justify-content:center;align-items:center;background:#8d6e63}
+#mirror{width:210px;height:300px;background:#e0e0e0;position:relative;overflow:hidden;border:6px solid #fff;transition:0.3s;border-radius:10px;box-shadow:0 0 60px #fff}
+#mirrorText{position:absolute;top:40%;left:0;width:100%;color:#555;font-size:15px;line-height:1.5}
+#sensorDot{position:absolute;bottom:10px;right:10px;width:16px;height:16px;background:#00ff00;border-radius:50%;box-shadow:0 0 10px #00ff00;z-index:5}
+#hand{font-size:50px;position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:none;z-index:10}
 #status{margin-top:10px;font-weight:bold}
-.dayNight{margin-top:10px;background:#fff;color:#000}
 </style>
 </head>
 <body>
@@ -40,15 +29,15 @@ input[type=range]{width:100%}
 <div class="controls">
 <b>1. Kamra Chunain / Room:</b>
 <div class="row">
-<button class="pill active" onclick="setRoom('bedroom',this)">🛏️ Bedroom</button>
-<button class="pill" onclick="setRoom('bathroom',this)">🛁 Bathroom</button>
-<button class="pill" onclick="setRoom('salon',this)">💇 Salon</button>
-<button class="pill" onclick="setRoom('living',this)">🛋️ Living Room</button>
+<button class="pill active" id="btn-bedroom" onclick="setRoom('bedroom')">🛏️ Bedroom</button>
+<button class="pill" id="btn-bathroom" onclick="setRoom('bathroom')">🛁 Bathroom</button>
+<button class="pill" id="btn-salon" onclick="setRoom('salon')">💇 Salon</button>
+<button class="pill" id="btn-living" onclick="setRoom('living')">🛋️ Living Room</button>
 </div>
 
 <b>2. Mirror Shape:</b>
 <select id="shape" onchange="changeShape()">
-<option value="">Rectangle</option>
+<option value="rect">Rectangle</option>
 <option value="round">Round</option>
 <option value="oval">Oval</option>
 <option value="arch">Arch</option>
@@ -56,10 +45,10 @@ input[type=range]{width:100%}
 
 <b>3. LED Color:</b>
 <div class="row">
-<button class="pill active" onclick="setLED('#ffffff',this)">White</button>
-<button class="pill" onclick="setLED('#ffe082',this)">Warm Yellow</button>
-<button class="pill" onclick="setLED('#80d8ff',this)">Cool Blue</button>
-<button class="pill" onclick="setLED('#ff80ab',this)">Pink</button>
+<button class="pill active" id="led-white" onclick="setLED('#ffffff','led-white')">White</button>
+<button class="pill" id="led-warm" onclick="setLED('#ffe082','led-warm')">Warm Yellow</button>
+<button class="pill" id="led-blue" onclick="setLED('#80d8ff','led-blue')">Cool Blue</button>
+<button class="pill" id="led-pink" onclick="setLED('#ff80ab','led-pink')">Pink</button>
 </div>
 
 <b>4. LED Brightness:</b>
@@ -70,76 +59,83 @@ input[type=range]{width:100%}
 <div id="status">💡 Light: ON hai</div>
 </div>
 
-<div id="room" class="bedroom">
+<div id="room">
 <div id="mirror">
 <div id="mirrorText">✨ LED Mirror<br><small>Sensor se Light ON / OFF karein</small></div>
-<div id="ledGlow"></div>
-<div id="sensorDot" class="on"></div>
+<div id="sensorDot"></div>
 <div id="hand">👋</div>
 </div>
 </div>
 <p><a href="index.html" style="color:#fff">← Wapas Website Par Jayein</a></p>
 
 <script>
-let ledColor='#ffffff';
-let isOn=true;
-let isNight=false;
-function setRoom(r,btn){
-  let room=document.getElementById('room');
-  room.className='';
-  if(isNight) room.classList.add('night');
-  room.classList.add(r);
-  document.querySelectorAll('.pill').forEach(b=>{if(b.parentElement.children.length>0 && b.innerText.includes('Bedroom')||b.innerText.includes('Bathroom')||b.innerText.includes('Salon')||b.innerText.includes('Living')) b.classList.remove('active')});
-  btn.classList.add('active');
+var ledColor = '#ffffff';
+var isOn = true;
+var isNight = false;
+
+function clearRoomButtons(){
+  document.getElementById('btn-bedroom').classList.remove('active');
+  document.getElementById('btn-bathroom').classList.remove('active');
+  document.getElementById('btn-salon').classList.remove('active');
+  document.getElementById('btn-living').classList.remove('active');
+}
+function setRoom(r){
+  var room = document.getElementById('room');
+  clearRoomButtons();
+  if(r=='bedroom'){ room.style.background='#8d6e63'; document.getElementById('btn-bedroom').classList.add('active'); }
+  if(r=='bathroom'){ room.style.background='#607d8b'; document.getElementById('btn-bathroom').classList.add('active'); }
+  if(r=='salon'){ room.style.background='#ad1457'; document.getElementById('btn-salon').classList.add('active'); }
+  if(r=='living'){ room.style.background='#2e7d32'; document.getElementById('btn-living').classList.add('active'); }
+  if(isNight){ room.style.filter='brightness(0.35)'; }
 }
 function changeShape(){
-  let m=document.getElementById('mirror');
-  m.classList.remove('round','oval','arch');
-  let s=document.getElementById('shape').value;
-  if(s) m.classList.add(s);
+  var m = document.getElementById('mirror');
+  var s = document.getElementById('shape').value;
+  if(s=='rect'){ m.style.borderRadius='10px'; m.style.width='210px'; m.style.height='300px'; }
+  if(s=='round'){ m.style.borderRadius='50%'; m.style.width='260px'; m.style.height='260px'; }
+  if(s=='oval'){ m.style.borderRadius='50%'; m.style.width='210px'; m.style.height='300px'; }
+  if(s=='arch'){ m.style.borderRadius='110px 110px 8px 8px'; m.style.width='210px'; m.style.height='300px'; }
 }
-function setLED(c,btn){
-  ledColor=c;
-  document.querySelectorAll('.pill').forEach(b=>{if(['White','Warm Yellow','Cool Blue','Pink'].includes(b.innerText)) b.classList.remove('active')});
-  if(btn) btn.classList.add('active');
+function setLED(c, id){
+  ledColor = c;
+  document.getElementById('led-white').classList.remove('active');
+  document.getElementById('led-warm').classList.remove('active');
+  document.getElementById('led-blue').classList.remove('active');
+  document.getElementById('led-pink').classList.remove('active');
+  document.getElementById(id).classList.add('active');
   updateLED();
 }
 function updateLED(){
-  let b=document.getElementById('brightness').value;
-  let glow=document.getElementById('ledGlow');
-  let mirror=document.getElementById('mirror');
-  if(!isOn){ glow.style.boxShadow='none'; mirror.style.boxShadow='none'; mirror.style.borderColor='#333'; return; }
-  glow.style.boxShadow='inset 0 0 45px '+ledColor;
+  var b = document.getElementById('brightness').value;
+  var mirror = document.getElementById('mirror');
+  if(!isOn){ mirror.style.boxShadow='none'; mirror.style.borderColor='#333'; return; }
   mirror.style.boxShadow='0 0 '+b+'px '+ledColor;
   mirror.style.borderColor=ledColor;
 }
-function playClick(){
-  try{
-    let ctx=new (window.AudioContext||window.webkitAudioContext)();
-    let o=ctx.createOscillator(); let g=ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.frequency.value=1200; g.gain.value=0.1;
-    o.start(); o.stop(ctx.currentTime+0.08);
-  }catch(e){}
-}
 function toggleSensor(){
-  let hand=document.getElementById('hand');
+  var hand = document.getElementById('hand');
   hand.style.display='block';
-  setTimeout(()=>{hand.style.display='none'},600);
-  playClick();
-  isOn=!isOn;
-  document.getElementById('sensorDot').className = isOn ? 'on' : '';
-  document.getElementById('sensorDot').id='sensorDot';
-  // fix class
-  let dot=document.getElementById('sensorDot');
-  dot.style.background = isOn ? '#00ff00' : '#ff0000';
-  dot.style.boxShadow = isOn ? '0 0 12px #00ff00' : '0 0 10px #ff0000';
-  document.getElementById('status').innerText = isOn ? '💡 Light: ON hai' : '🌑 Light: OFF hai - Dobara Haath Hilao';
-  // navigator vibrate for mobile feel
+  setTimeout(function(){ hand.style.display='none'; },600);
+  try{
+    var ctx = new (window.AudioContext||window.webkitAudioContext)();
+    var o = ctx.createOscillator(); var g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value=1200; g.gain.value=0.1; o.start(); o.stop(ctx.currentTime+0.08);
+  }catch(e){}
   if(navigator.vibrate) navigator.vibrate(50);
+  isOn = !isOn;
+  var dot = document.getElementById('sensorDot');
+  if(isOn){ dot.style.background='#00ff00'; dot.style.boxShadow='0 0 10px #00ff00'; document.getElementById('status').innerText='💡 Light: ON hai'; }
+  else{ dot.style.background='#ff0000'; dot.style.boxShadow='0 0 10px #ff0000'; document.getElementById('status').innerText='🌑 Light: OFF hai - Dobara Haath Hilao'; }
   updateLED();
 }
 function toggleNight(){
-  isNight=!isNight;
-  let room=document.getElementById('room');
-  if(isNight) room.classList.add
+  isNight = !isNight;
+  var room = document.getElementById('room');
+  if(isNight){ room.style.filter='brightness(0.35)'; }
+  else{ room.style.filter='brightness(1)'; }
+}
+updateLED();
+</script>
+</body>
+</html>
