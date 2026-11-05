@@ -51,3 +51,22 @@ updateLight();
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{background:#111;color:#fff;text-align:center;font-family:sans-serif;margin:0;padding:15px}
+img{width:95%;max-width:420px;border-radius:50%;transition:0.3s}
+button{padding:14px 20px;border:none;border-radius:12px;font-size:18px;margin:8px;width:90%;max-width:400px}
+.off img{filter:brightness(0.35) grayscale(0.5)}
+</style></head>
+<body id="b">
+<h2>✨ Versace LED Mirror ✨</h2>
+<div><img id="m" src="mirror.jpg"></div>
+<p id="t">💡 Light: ON hai</p>
+<button style="background:orange" onclick="toggle()">👋 Haath Hilao - Sensor ON / OFF</button><br>
+<button onclick="document.getElementById('b').style.background=document.getElementById('b').style.background=='black'?'#111':'black'">🌙 Din / Raat</button><br>
+<a href="index.html" style="color:#fff">← Wapas Website Par Jayein</a>
+<script>
+let on=true;
+function toggle(){on=!on;document.getElementById('m').style.filter=on?'none':'brightness(0.3)';document.getElementById('t').innerText=on?'💡 Light: ON hai':'💡 Light: OFF hai'}
+document.getElementById('m').onclick=toggle;
+</script></body></html>
