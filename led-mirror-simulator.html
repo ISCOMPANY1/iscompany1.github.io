@@ -3,31 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Mirror Simulator</title>
+<title>Sensor + Room Mirror Simulator</title>
 <style>
-body{font-family:Arial,sans-serif;background:#111;color:#fff;text-align:center;margin:0;padding:15px}
-h2{margin:5px 0 15px}
-.controls{background:#222;padding:15px;border-radius:15px;max-width:500px;margin:0 auto 20px}
-.controls label{display:block;margin:10px 0 5px;text-align:left}
-select,input{width:100%;padding:10px;border-radius:8px;border:none;font-size:16px}
-.btn{margin-top:15px;background:#00c853;color:#fff;border:none;padding:12px;width:100%;border-radius:10px;font-size:17px;font-weight:bold;cursor:pointer}
-.btn.off{background:#d50000}
-.mirror-wrap{display:flex;justify-content:center}
-#mirror{width:280px;height:380px;background:#c0c0c0;position:relative;overflow:hidden;border:10px solid #333;transition:0.3s;box-shadow:0 0 30px #fff}
-#mirror.round{border-radius:50%;width:300px;height:300px}
-#mirror.oval{border-radius:50%;width:280px;height:380px}
-#mirror.arch{border-radius:140px 140px 10px 10px}
-#camVideo{width:100%;height:100%;object-fit:cover;display:none;transform:scaleX(-1)}
-#mirrorText{position:absolute;top:50%;left:0;width:100%;transform:translateY(-50%);color:#555;font-size:18px}
-#ledGlow{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 40px #fff}
-small{color:#aaa}
+body{font-family:Arial,sans-serif;background:#111;color:#fff;text-align:center;margin:0;padding:12px}
+h2{margin:5px 0 10px}
+.controls{background:#222;padding:14px;border-radius:15px;max-width:520px;margin:0 auto 12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.pill{background:#333;color:#fff;border:2px solid #555;padding:9px 14px;border-radius:20px;cursor:pointer;font-size:14px}
+.pill.active{background:#00c853;border-color:#00c853;font-weight:bold}
+select{width:100%;padding:10px;border-radius:8px;border:none;font-size:16px;margin-top:5px}
+input[type=range]{width:100%}
+.sensorBtn{background:linear-gradient(45deg,#ff9800,#ff5722);color:#fff;border:none;padding:14px;width:100%;border-radius:12px;font-size:18px;font-weight:bold;cursor:pointer;margin-top:12px}
+.sensorBtn:active{transform:scale(0.97)}
+#room{max-width:520px;height:480px;margin:0 auto;border-radius:18px;position:relative;overflow:hidden;transition:0.5s;background:#5d4037;display:flex;justify-content:center;align-items:center}
+#room.bedroom{background:linear-gradient(#8d6e63,#4e342e)}
+#room.bathroom{background:linear-gradient(#b0bec5,#607d8b)}
+#room.salon{background:linear-gradient(#f48fb1,#ad1457)}
+#room.living{background:linear-gradient(#a5d6a7,#2e7d32)}
+#room.night{filter:brightness(0.35)}
+#mirror{width:240px;height:330px;background:linear-gradient(135deg,#e0e0e0,#9e9e9e);position:relative;overflow:hidden;border:8px solid #333;transition:0.3s;border-radius:10px}
+#mirror.round{border-radius:50%;width:280px;height:280px}
+#mirror.oval{border-radius:50%;width:240px;height:330px}
+#mirror.arch{border-radius:120px 120px 8px 8px}
+#mirrorText{position:absolute;top:42%;left:0;width:100%;color:#666;font-size:16px;line-height:1.5}
+#ledGlow{position:absolute;inset:0;pointer-events:none;opacity:0.8}
+#sensorDot{position:absolute;bottom:12px;right:12px;width:18px;height:18px;background:#ff0000;border-radius:50%;box-shadow:0 0 10px #ff0000;z-index:5}
+#sensorDot.on{background:#00ff00;box-shadow:0 0 12px #00ff00}
+#hand{font-size:50px;position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);display:none;z-index:10;animation:wave 0.6s ease}
+@keyframes wave{0%{transform:translateX(-80%) translateY(20px)}50%{transform:translateX(-20%) translateY(-20px)}100%{transform:translateX(-50%) translateY(0)}}
+#status{margin-top:10px;font-weight:bold}
+.dayNight{margin-top:10px;background:#fff;color:#000}
 </style>
 </head>
 <body>
-<h2>🪞 Live Mirror Simulator</h2>
-
+<h2>🪞 Sensor + Room Mirror Simulator</h2>
 <div class="controls">
-<label>Mirror Shape / Shape Chunain:</label>
+<b>1. Kamra Chunain / Room:</b>
+<div class="row">
+<button class="pill active" onclick="setRoom('bedroom',this)">🛏️ Bedroom</button>
+<button class="pill" onclick="setRoom('bathroom',this)">🛁 Bathroom</button>
+<button class="pill" onclick="setRoom('salon',this)">💇 Salon</button>
+<button class="pill" onclick="setRoom('living',this)">🛋️ Living Room</button>
+</div>
+
+<b>2. Mirror Shape:</b>
 <select id="shape" onchange="changeShape()">
 <option value="">Rectangle</option>
 <option value="round">Round</option>
@@ -35,71 +54,92 @@ small{color:#aaa}
 <option value="arch">Arch</option>
 </select>
 
-<label>LED Light Color:</label>
-<select id="ledColor" onchange="changeLED()">
-<option value="#ffffff">White</option>
-<option value="#ffe082">Warm Yellow</option>
-<option value="#80d8ff">Cool Blue</option>
-<option value="#ff80ab">Pink</option>
-</select>
-
-<label>LED Brightness:</label>
-<input type="range" id="brightness" min="0" max="100" value="70" oninput="changeLED()">
-
-<button class="btn" id="camBtn" onclick="toggleCamera()">📸 Live Mirror ON - Apna Face Dekhen</button>
-<small>Camera ON karne par mobile Allow puchega, Allow dabana hai.</small>
+<b>3. LED Color:</b>
+<div class="row">
+<button class="pill active" onclick="setLED('#ffffff',this)">White</button>
+<button class="pill" onclick="setLED('#ffe082',this)">Warm Yellow</button>
+<button class="pill" onclick="setLED('#80d8ff',this)">Cool Blue</button>
+<button class="pill" onclick="setLED('#ff80ab',this)">Pink</button>
 </div>
 
-<div class="mirror-wrap">
+<b>4. LED Brightness:</b>
+<input type="range" id="brightness" min="0" max="100" value="80" oninput="updateLED()">
+
+<button class="sensorBtn" onclick="toggleSensor()">👋 Haath Hilao - Sensor ON / OFF</button>
+<button class="sensorBtn dayNight" onclick="toggleNight()">🌙 Din / Raat - Raat Me Dekhen</button>
+<div id="status">💡 Light: ON hai</div>
+</div>
+
+<div id="room" class="bedroom">
 <div id="mirror">
-<video id="camVideo" autoplay playsinline muted></video>
-<div id="mirrorText">Mirror Preview<br>Camera ON karein to apna face dekhen</div>
+<div id="mirrorText">✨ LED Mirror<br><small>Sensor se Light ON / OFF karein</small></div>
 <div id="ledGlow"></div>
+<div id="sensorDot" class="on"></div>
+<div id="hand">👋</div>
 </div>
 </div>
-<p style="margin-top:20px"><a href="index.html" style="color:#fff">← Wapas Website Par Jayein</a></p>
+<p><a href="index.html" style="color:#fff">← Wapas Website Par Jayein</a></p>
 
 <script>
-let stream = null;
+let ledColor='#ffffff';
+let isOn=true;
+let isNight=false;
+function setRoom(r,btn){
+  let room=document.getElementById('room');
+  room.className='';
+  if(isNight) room.classList.add('night');
+  room.classList.add(r);
+  document.querySelectorAll('.pill').forEach(b=>{if(b.parentElement.children.length>0 && b.innerText.includes('Bedroom')||b.innerText.includes('Bathroom')||b.innerText.includes('Salon')||b.innerText.includes('Living')) b.classList.remove('active')});
+  btn.classList.add('active');
+}
 function changeShape(){
-  let m = document.getElementById('mirror');
-  m.className = '';
-  m.id = 'mirror';
-  let s = document.getElementById('shape').value;
+  let m=document.getElementById('mirror');
+  m.classList.remove('round','oval','arch');
+  let s=document.getElementById('shape').value;
   if(s) m.classList.add(s);
 }
-function changeLED(){
-  let c = document.getElementById('ledColor').value;
-  let b = document.getElementById('brightness').value;
-  let glow = document.getElementById('ledGlow');
-  let mirror = document.getElementById('mirror');
-  glow.style.boxShadow = 'inset 0 0 40px ' + c;
-  mirror.style.boxShadow = '0 0 ' + b + 'px ' + c;
-  mirror.style.borderColor = c;
+function setLED(c,btn){
+  ledColor=c;
+  document.querySelectorAll('.pill').forEach(b=>{if(['White','Warm Yellow','Cool Blue','Pink'].includes(b.innerText)) b.classList.remove('active')});
+  if(btn) btn.classList.add('active');
+  updateLED();
 }
-async function toggleCamera(){
-  let video = document.getElementById('camVideo');
-  let btn = document.getElementById('camBtn');
-  let txt = document.getElementById('mirrorText');
-  if(!stream){
-    try{
-      stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
-      video.srcObject = stream;
-      video.style.display = 'block';
-      txt.style.display = 'none';
-      btn.innerText = '❌ Live Mirror OFF';
-      btn.classList.add('off');
-    }catch(e){ alert('Camera Allow nahi hua. Dobara Allow dabayein.'); }
-  } else {
-    stream.getTracks().forEach(t=>t.stop());
-    stream = null;
-    video.style.display = 'none';
-    txt.style.display = 'block';
-    btn.innerText = '📸 Live Mirror ON - Apna Face Dekhen';
-    btn.classList.remove('off');
-  }
+function updateLED(){
+  let b=document.getElementById('brightness').value;
+  let glow=document.getElementById('ledGlow');
+  let mirror=document.getElementById('mirror');
+  if(!isOn){ glow.style.boxShadow='none'; mirror.style.boxShadow='none'; mirror.style.borderColor='#333'; return; }
+  glow.style.boxShadow='inset 0 0 45px '+ledColor;
+  mirror.style.boxShadow='0 0 '+b+'px '+ledColor;
+  mirror.style.borderColor=ledColor;
 }
-changeLED();
-</script>
-</body>
-</html>
+function playClick(){
+  try{
+    let ctx=new (window.AudioContext||window.webkitAudioContext)();
+    let o=ctx.createOscillator(); let g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value=1200; g.gain.value=0.1;
+    o.start(); o.stop(ctx.currentTime+0.08);
+  }catch(e){}
+}
+function toggleSensor(){
+  let hand=document.getElementById('hand');
+  hand.style.display='block';
+  setTimeout(()=>{hand.style.display='none'},600);
+  playClick();
+  isOn=!isOn;
+  document.getElementById('sensorDot').className = isOn ? 'on' : '';
+  document.getElementById('sensorDot').id='sensorDot';
+  // fix class
+  let dot=document.getElementById('sensorDot');
+  dot.style.background = isOn ? '#00ff00' : '#ff0000';
+  dot.style.boxShadow = isOn ? '0 0 12px #00ff00' : '0 0 10px #ff0000';
+  document.getElementById('status').innerText = isOn ? '💡 Light: ON hai' : '🌑 Light: OFF hai - Dobara Haath Hilao';
+  // navigator vibrate for mobile feel
+  if(navigator.vibrate) navigator.vibrate(50);
+  updateLED();
+}
+function toggleNight(){
+  isNight=!isNight;
+  let room=document.getElementById('room');
+  if(isNight) room.classList.add
