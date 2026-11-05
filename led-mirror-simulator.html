@@ -1,130 +1,105 @@
 <!DOCTYPE html>
-<html lang="ur-Latn">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>IS Company - LED Mirror Simulator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Mirror Simulator</title>
 <style>
-:root{--bg:#f4f1ea;--card:#fff;--text:#1d1a14;--muted:#6b665b;--line:#e2dccd;--gold:#b8892b;--field:#faf7f0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14120e;--card:#1e1b15;--text:#f1ece0;--muted:#a79f8d;--line:#352f23;--gold:#d9a93f;--field:#26221a;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14120e;--card:#1e1b15;--text:#f1ece0;--muted:#a79f8d;--line:#352f23;--gold:#d9a93f;--field:#26221a;color-scheme:dark}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
-.wrap{max-width:880px;margin:0 auto;padding:14px}
-header{text-align:center;padding:10px 0 14px}
-header h1{margin:0;font-size:22px;letter-spacing:.5px;color:var(--gold)}
-header p{margin:2px 0 0;font-size:13px;color:var(--muted)}
-.grid{display:grid;gap:14px;grid-template-columns:1fr}
-@media(min-width:760px){.grid{grid-template-columns:1.1fr 1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
-.card h2{margin:0 0 10px;font-size:15px}
-.stage{background:radial-gradient(circle at 50% 30%,#3a342a,#0f0d0a);border-radius:12px;min-height:390px;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
-#frame{display:inline-block;transition:all .3s}
-#led{padding:7px;transition:all .4s;background:#2a2a2a;cursor:pointer;touch-action:manipulation}
-#mirror{position:relative;overflow:hidden;background:linear-gradient(135deg,#cfd8de 0%,#8fa0ab 45%,#e6edf1 55%,#7d8e99 100%);transition:all .3s}
-#fog{position:absolute;inset:0;background:rgba(235,240,243,.92);opacity:0;transition:opacity 1.8s}
-#msg{position:absolute;left:8px;right:8px;bottom:8px;text-align:center;font-size:12px;color:#d8d2c2;background:rgba(0,0,0,.45);border-radius:8px;padding:4px 8px;min-height:24px}
-.stat{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:13px}
-.stat span{background:var(--field);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
-label{display:block;font-size:13px;margin:10px 0 4px;color:var(--muted)}
-label b{color:var(--text);font-weight:600}
-input[type=range]{width:100%;accent-color:var(--gold)}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-button{font:inherit;font-size:14px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--field);color:var(--text);cursor:pointer}
-button.on,button.sel{background:var(--gold);color:#1d1a14;border-color:var(--gold);font-weight:600}
-button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.sw{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
-.sw:last-child{border:0}
-.sw small{display:block;color:var(--muted);font-size:12px}
-#checks div{padding:6px 0;border-bottom:1px solid var(--line);font-size:14px;display:flex;justify-content:space-between}
-.ok{color:#1f9d55}.warn{color:#c77b00}
+body{font-family:Arial,sans-serif;background:#111;color:#fff;text-align:center;margin:0;padding:15px}
+h2{margin:5px 0 15px}
+.controls{background:#222;padding:15px;border-radius:15px;max-width:500px;margin:0 auto 20px}
+.controls label{display:block;margin:10px 0 5px;text-align:left}
+select,input{width:100%;padding:10px;border-radius:8px;border:none;font-size:16px}
+.btn{margin-top:15px;background:#00c853;color:#fff;border:none;padding:12px;width:100%;border-radius:10px;font-size:17px;font-weight:bold;cursor:pointer}
+.btn.off{background:#d50000}
+.mirror-wrap{display:flex;justify-content:center}
+#mirror{width:280px;height:380px;background:#c0c0c0;position:relative;overflow:hidden;border:10px solid #333;transition:0.3s;box-shadow:0 0 30px #fff}
+#mirror.round{border-radius:50%;width:300px;height:300px}
+#mirror.oval{border-radius:50%;width:280px;height:380px}
+#mirror.arch{border-radius:140px 140px 10px 10px}
+#camVideo{width:100%;height:100%;object-fit:cover;display:none;transform:scaleX(-1)}
+#mirrorText{position:absolute;top:50%;left:0;width:100%;transform:translateY(-50%);color:#555;font-size:18px}
+#ledGlow{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 40px #fff}
+small{color:#aaa}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header><h1>IS COMPANY</h1><p>LED Mirror Simulator - design, run aur sensor check</p></header>
-<div class="grid">
- <div>
-  <div class="stage"><div id="frame"><div id="led"><div id="mirror"><div id="fog"></div></div></div></div><div id="msg">Mirror band hai. Power dabayein ya mirror par tap karein.</div></div>
-  <div class="stat"><span id="s1"></span><span id="s2"></span><span id="s3"></span></div>
- </div>
- <div class="card">
-  <h2>Run</h2>
-  <div class="row"><button id="pw">&#9211; Power</button><button id="chk">&#10003; Sab check karein</button></div>
-  <label>LED roshni: <b id="bv"></b></label><input id="br" type="range" min="10" max="100" value="80">
-  <label>Rang (Kelvin): <b id="tv"></b></label><input id="tp" type="range" min="3000" max="6500" step="100" value="4000">
-  <h2 style="margin-top:16px">Design</h2>
-  <label>Chaurai: <b id="wv"></b></label><input id="w" type="range" min="30" max="120" value="60">
-  <label>Lambai: <b id="hv"></b></label><input id="h" type="range" min="40" max="180" value="90">
-  <label>Shakal</label><div class="row" id="shape"><button data-v="rect" class="sel">Chauras</button><button data-v="oval">Oval</button><button data-v="round">Gol</button></div>
-  <label>Frame</label><div class="row" id="fr"><button data-v="none">Koi nahi</button><button data-v="#111" class="sel">Kala</button><button data-v="#c9a24a">Sunehra</button><button data-v="#c8ccd0">Silver</button></div>
- </div>
+<h2>🪞 Live Mirror Simulator</h2>
+
+<div class="controls">
+<label>Mirror Shape / Shape Chunain:</label>
+<select id="shape" onchange="changeShape()">
+<option value="">Rectangle</option>
+<option value="round">Round</option>
+<option value="oval">Oval</option>
+<option value="arch">Arch</option>
+</select>
+
+<label>LED Light Color:</label>
+<select id="ledColor" onchange="changeLED()">
+<option value="#ffffff">White</option>
+<option value="#ffe082">Warm Yellow</option>
+<option value="#80d8ff">Cool Blue</option>
+<option value="#ff80ab">Pink</option>
+</select>
+
+<label>LED Brightness:</label>
+<input type="range" id="brightness" min="0" max="100" value="70" oninput="changeLED()">
+
+<button class="btn" id="camBtn" onclick="toggleCamera()">📸 Live Mirror ON - Apna Face Dekhen</button>
+<small>Camera ON karne par mobile Allow puchega, Allow dabana hai.</small>
 </div>
-<div class="grid" style="margin-top:14px">
- <div class="card">
-  <h2>Sensors</h2>
-  <div class="sw"><div>Touch sensor<small>Tap: on/off. Dabaye rakhein: roshni badlein</small></div><button id="tT" class="on">ON</button></div>
-  <div class="sw"><div>Motion sensor<small>Banda aaye to khud on, jaaye to off</small></div><button id="tM" class="on">ON</button></div>
-  <div class="sw"><div>Light sensor<small>Kamray ki roshni ke hisaab se LED</small></div><button id="tL" class="on">ON</button></div>
-  <div class="sw"><div>Anti-fog heater<small>Bhaap saaf karta hai</small></div><button id="tF" class="on">ON</button></div>
-  <label>Kamray ki roshni: <b id="rv"></b></label><input id="rm" type="range" min="0" max="100" value="60">
-  <div class="row" style="margin-top:10px"><button id="in">&#128694; Banda aaya</button><button id="out">&#128694; Banda gaya</button><button id="steam">&#128703; Bhaap lao</button></div>
- </div>
- <div class="card"><h2>Check ka nateeja</h2><div id="checks"><div style="color:var(--muted)">"Sab check karein" dabayein.</div></div></div>
+
+<div class="mirror-wrap">
+<div id="mirror">
+<video id="camVideo" autoplay playsinline muted></video>
+<div id="mirrorText">Mirror Preview<br>Camera ON karein to apna face dekhen</div>
+<div id="ledGlow"></div>
 </div>
-<p style="text-align:center;font-size:12px;color:var(--muted)">Ye sirf namoona (simulation) hai. Watt aur LED ki lambai andaza hain.</p>
 </div>
+<p style="margin-top:20px"><a href="index.html" style="color:#fff">← Wapas Website Par Jayein</a></p>
+
 <script>
-var S={on:false,br:80,tp:4000,w:60,h:90,shape:'rect',fr:'#111',t:true,m:true,l:true,f:true,room:60,off:null};
-var $=function(i){return document.getElementById(i)};
-function col(k){return k<4000?'#ffb46b':k<5200?'#fff0d6':'#d9e8ff'}
-function say(t){$('msg').textContent=t}
-function eff(){return (S.l&&S.on)?Math.round(Math.min(100,Math.max(25,S.br+(50-S.room)*0.5))):S.br}
-function render(){
-  var sc=Math.min(260/S.w,300/S.h),w=S.w*sc,h=S.shape==='round'?w:S.h*sc,r=S.shape==='rect'?'12px':'50%';
-  var fm=$('frame'),led=$('led'),mi=$('mirror');
-  mi.style.width=w+'px';mi.style.height=h+'px';mi.style.borderRadius=r;
-  led.style.borderRadius=r;fm.style.borderRadius=r;
-  fm.style.padding=S.fr==='none'?'0':'6px';fm.style.background=S.fr==='none'?'transparent':S.fr;
-  var e=eff(),c=col(S.tp);
-  led.style.background=S.on?c:'#2a2a2a';
-  led.style.boxShadow=S.on?'0 0 '+(10+e*0.5)+'px '+(e*0.18)+'px '+c+', 0 0 '+(e*1.1)+'px '+c:'none';
-  led.style.filter=S.on?'brightness('+(0.6+e/160)+')':'none';
-  var hh=S.shape==='round'?S.w:S.h,per=2*(S.w+hh)/100,watt=S.on?(per*12*e/100).toFixed(1):'0';
-  $('s1').textContent=S.on?'Mirror ON':'Mirror OFF';
-  $('s2').textContent='LED strip: '+per.toFixed(1)+' meter';
-  $('s3').textContent='Bijli: ~'+watt+' W';
-  $('bv').textContent=S.br+'%'+(S.l&&S.on?' (auto: '+e+'%)':'');$('tv').textContent=S.tp+'K';
-  $('wv').textContent=S.w+' cm';$('hv').textContent=(S.shape==='round'?S.w:S.h)+' cm';$('rv').textContent=S.room+'%';
-  $('pw').className=S.on?'on':'';
-  [['tT','t'],['tM','m'],['tL','l'],['tF','f']].forEach(function(p){var b=$(p[0]);b.textContent=S[p[1]]?'ON':'OFF';b.className=S[p[1]]?'on':''});
+let stream = null;
+function changeShape(){
+  let m = document.getElementById('mirror');
+  m.className = '';
+  m.id = 'mirror';
+  let s = document.getElementById('shape').value;
+  if(s) m.classList.add(s);
 }
-function power(v){S.on=v;render()}
-$('pw').onclick=function(){power(!S.on);say(S.on?'Mirror on ho gaya.':'Mirror band.')};
-$('br').oninput=function(){S.br=+this.value;render()};
-$('tp').oninput=function(){S.tp=+this.value;render()};
-$('w').oninput=function(){S.w=+this.value;render()};
-$('h').oninput=function(){S.h=+this.value;render()};
-$('rm').oninput=function(){S.room=+this.value;render()};
-function pick(id,key){$(id).onclick=function(e){var b=e.target.closest('button');if(!b)return;S[key]=b.dataset.v;[].forEach.call($(id).children,function(x){x.className=x===b?'sel':''});render()}}
-pick('shape','shape');pick('fr','fr');
-[['tT','t'],['tM','m'],['tL','l'],['tF','f']].forEach(function(p){$(p[0]).onclick=function(){S[p[1]]=!S[p[1]];render()}});
-var pt=null,longp=false;
-$('led').addEventListener('pointerdown',function(){longp=false;pt=setTimeout(function(){longp=true;if(S.t&&S.on){S.br=S.br>=100?25:S.br+25;$('br').value=S.br;say('Touch (dabaye rakha): roshni '+S.br+'%');render()}},600)});
-$('led').addEventListener('pointerup',function(){clearTimeout(pt);if(longp)return;if(!S.t){say('Touch sensor band hai.');return}power(!S.on);say(S.on?'Touch: mirror on.':'Touch: mirror off.')});
-$('led').addEventListener('pointerleave',function(){clearTimeout(pt)});
-$('in').onclick=function(){clearTimeout(S.off);if(!S.m){say('Motion sensor band hai, banda aaya to bhi kuch nahi hoga.');return}power(true);say('Motion sensor ne banda dekha: mirror on.')};
-$('out').onclick=function(){if(!S.m){say('Motion sensor band hai.');return}say('Banda chala gaya. 3 second mein mirror band.');clearTimeout(S.off);S.off=setTimeout(function(){power(false);say('Motion sensor: mirror band.')},3000)};
-var ft=null;
-$('steam').onclick=function(){$('fog').style.opacity=1;clearTimeout(ft);if(S.f){say('Bhaap aayi, heater saaf kar raha hai...');ft=setTimeout(function(){$('fog').style.opacity=0;say('Heater ne mirror saaf kar diya.')},2500)}else{say('Heater band hai, mirror par bhaap jami rahegi.')}};
-$('chk').onclick=function(){
-  var box=$('checks');box.innerHTML='';var wasOn=S.on;
-  var items=[['Bijli / Power',true,'OK'],['LED strip',true,'OK'],['Touch sensor',S.t,S.t?'OK':'Band hai'],['Motion sensor',S.m,S.m?'OK':'Band hai'],['Light sensor',S.l,S.l?'OK (kamra '+S.room+'%)':'Band hai'],['Anti-fog heater',S.f,S.f?'OK':'Band hai']];
-  power(true);say('Check shuru...');
-  items.forEach(function(it,i){setTimeout(function(){var d=document.createElement('div');d.innerHTML='<span>'+it[0]+'</span><span class="'+(it[1]?'ok':'warn')+'">'+(it[1]?'&#10003; ':'&#9888; ')+it[2]+'</span>';box.appendChild(d);
-    if(i===items.length-1){power(wasOn);var bad=items.filter(function(x){return !x[1]}).length;say(bad?'Check mukammal: '+bad+' cheez band hai.':'Check mukammal: sab theek hai.')}},(i+1)*450)});
-};
-render();
+function changeLED(){
+  let c = document.getElementById('ledColor').value;
+  let b = document.getElementById('brightness').value;
+  let glow = document.getElementById('ledGlow');
+  let mirror = document.getElementById('mirror');
+  glow.style.boxShadow = 'inset 0 0 40px ' + c;
+  mirror.style.boxShadow = '0 0 ' + b + 'px ' + c;
+  mirror.style.borderColor = c;
+}
+async function toggleCamera(){
+  let video = document.getElementById('camVideo');
+  let btn = document.getElementById('camBtn');
+  let txt = document.getElementById('mirrorText');
+  if(!stream){
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
+      video.srcObject = stream;
+      video.style.display = 'block';
+      txt.style.display = 'none';
+      btn.innerText = '❌ Live Mirror OFF';
+      btn.classList.add('off');
+    }catch(e){ alert('Camera Allow nahi hua. Dobara Allow dabayein.'); }
+  } else {
+    stream.getTracks().forEach(t=>t.stop());
+    stream = null;
+    video.style.display = 'none';
+    txt.style.display = 'block';
+    btn.innerText = '📸 Live Mirror ON - Apna Face Dekhen';
+    btn.classList.remove('off');
+  }
+}
+changeLED();
 </script>
 </body>
 </html>
